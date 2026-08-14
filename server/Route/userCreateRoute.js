@@ -1,9 +1,22 @@
 const express = require("express");
 const router = express.Router();
-const {handleLogoin, handleCreateUser, upload} = require("../controller/userController")
+const {
+  handleLogoin,
+  handleCreateUser,
+  upload,
+  viewProtectedFile,
+} = require("../controller/userController");
 
-router.post("/users", upload.single("document"), handleCreateUser  );
+router.post(
+  "/users",
+  upload.fields([
+    { name: "profileImage", maxCount: 1 },
+    { name: "aadharCard", maxCount: 1 },
+  ]),
+  handleCreateUser
+);
 
+// router.get("/view/:email/:type", viewProtectedFile);
 router.post("/userlogin", handleLogoin);
 
 module.exports = router;
