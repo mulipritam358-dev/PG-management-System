@@ -1,38 +1,69 @@
-.App {
+body {
+  font-family: Arial, sans-serif;
+  background: #f4f7fb;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  margin: 0;
+}
+.card {
+  background: white;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 420px;
+}
+h2 {
+  margin-top: 0;
   text-align: center;
 }
-
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+form {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
+  gap: 15px;
+}
+input,
+select,
+button {
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  font-size: 16px;
+}
+button {
+  background: #2563eb;
   color: white;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
 }
 
-.App-link {
-  color: #61dafb;
+/* Dummy CSS starts */
+.parentDiv {
+  background-color: "#FFFFFE";
+  width: 100vw;
+  height: 100vh
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+#form {
+  border: 2px solid purple;  
+  width: 454px;
+  height: 717px;
+  margin-left: 152px;
+  margin-top: 102px;
 }
+
+#form p {
+  color: #B9B8B8;
+  margin-top: 23px;
+  min-height: 49px;
+  min-width: 454px;
+  font-weight: 16px;
+  font-weight: lighter;
+}
+
+/* #form input {
+  margin-top: 37px;
+} */

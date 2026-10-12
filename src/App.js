@@ -1,25 +1,73 @@
-import logo from './logo.svg';
-import './App.css';
+
+import logo from "./logo.svg";
+import "./App.css";
+import { BrowserRouter as Router, Routes, Route } from "react-router";
+import Signup from "./Componeent/Auth/Signup";
+import Dummy from "./Componeent/Auth/Dummy";
+import DummyType from "./Componeent/DummyType";
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      <Router>
+        <Routes>
+          <Route path="/" element={<DummyType />} />
+          <Route exact path="/auth/register" element={<Signup />} />
+          {/* <Route exact path="/auth/login" element={} /> */}
+        </Routes>
+      </Router>
+    </>
   );
 }
 
 export default App;
+
+// import { useState } from "react";
+
+// export default function App() {
+//   const [reverse, setReverse] = useState(false);
+//   let checkbox = (
+//     <label>
+//       <input
+//         type="checkbox"
+//         checked={reverse}
+//         onChange={(e) => setReverse(e.target.checked)}
+//       />
+//       Reverse order
+//     </label>
+//   );
+//   if (reverse) {
+//     return (
+//       <>
+//         <Field key="lastName" label="Last name" />
+//         <Field key="firstName" label="First name" />
+//         {checkbox}
+//       </>
+//     );
+//   } else {
+//     return (
+//       <>
+//         <Field key="firstName" label="First name" />
+//         <Field key="lastName" label="Last name" />
+//         {checkbox}
+//       </>
+//     );
+//   }
+// }
+
+// function Field({ label }) {
+//   const [text, setText] = useState("");
+//   return (
+//     <>
+//     <label>
+//       {label}:{" "}
+//       <input
+//         type="text"
+//         value={text}
+//         placeholder={label}
+//         onChange={(e) => setText(e.target.value)}
+//         />
+//     </label> <br />
+//         </>
+//   );
+// }
