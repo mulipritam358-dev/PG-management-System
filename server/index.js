@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const path = require("path");
+const { JWT_SECRET } = require("./config");
 const { connecttomongoose } = require("./connect");
 const { constants } = require("../CommonPart/constant");
 const userCreateRoute = require("./Route/userCreateRoute");
@@ -31,6 +32,9 @@ app.get("/", (req, res) => res.render("fileUpload"));
 
 async function startServer() {
   try {
+    if (!JWT_SECRET) {
+      throw new Error("JWT_SECRET is missing from server/.env");
+    }
     await connecttomongoose();
     await seedRooms();
     app.listen(constants.PORT, () =>

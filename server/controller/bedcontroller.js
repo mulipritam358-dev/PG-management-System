@@ -38,7 +38,7 @@ const vacantBed = async (req, res) => {
       (roomBed) => roomBed.status === "Occupied",
     );
     room.occupiedFor = remainingOccupant ? remainingOccupant.gender : "";
- 
+
     await room.save();
     return res.status(200).json({
       success: true,
@@ -147,21 +147,7 @@ const updatedBedStatus = async (req, res) => {
         });
       }
 
-      if (!joiningDate) {
-        return res.status(400).json({
-          success: false,
-          message: "Joining date is required",
-        });
-      }
-
       const parsedJoiningDate = new Date(joiningDate);
-
-      if (Number.isNaN(parsedJoiningDate.getTime())) {
-        return res.status(400).json({
-          success: false,
-          message: "Invalid joining date",
-        });
-      }
 
       let parsedLastDate;
       if (lastDate !== undefined && lastDate !== null && lastDate !== "") {

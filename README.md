@@ -1,5 +1,49 @@
 # Getting Started with Create React App
 
+## Server authentication
+
+The Express server reads its private JWT signing key from
+`server/.env`. Generate a random value and add it to that file:
+
+```powershell
+node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+```
+
+Set the generated value in `server/.env`:
+
+```dotenv
+JWT_SECRET=<generated-value>
+```
+
+Then start the server:
+
+```powershell
+cd server
+npm start
+```
+
+Do not commit the secret. The `POST /api/userlogin` endpoint is public and
+returns a short-lived bearer token. Send it on protected requests as
+`Authorization: Bearer <token>` (the login endpoint also sets an HttpOnly
+`uid` cookie).
+
+- `POST /api/users` is public registration; allowed roles are `owner`, `tenant`,
+  and `user`. Public registration cannot create admins.
+- `GET /api/users` returns user account details without passwords or uploaded
+  documents, and requires an admin token.
+- All endpoints under `/api/admin` require an authenticated admin.
+
+To provision the first administrator, register that account normally and then
+promote it directly in the trusted MongoDB shell:
+
+```javascript
+use pgmanagement
+db.users.updateOne(
+  { email: "admin@example.com" },
+  { $set: { role: "admin" } }
+)
+```
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts

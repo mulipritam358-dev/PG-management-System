@@ -63,12 +63,21 @@ bedSchema.pre("validate", function () {
     }
 
     if (!this.joiningDate) {
-      throw new Error("Joining date is required when bed is occupied");
+      // throw new Error("Joining date is required when bed is occupied");
+      this.joiningDate = new Date();
     }
 
-    if (!this.lastDate && this.joiningDate) {
+    // if (!this.lastDate && this.joiningDate) {
+    //   const calculatedLastDate = new Date(this.joiningDate);
+    //   calculatedLastDate.setDate(calculatedLastDate.getDate() + 32);
+    //   this.lastDate = calculatedLastDate;
+    // }
+    // Set checkout date to 30 days after joining date
+    if (!this.lastDate) {
       const calculatedLastDate = new Date(this.joiningDate);
-      calculatedLastDate.setDate(calculatedLastDate.getDate() + 32);
+
+      calculatedLastDate.setDate(calculatedLastDate.getDate() + 30);
+
       this.lastDate = calculatedLastDate;
     }
   }
@@ -80,7 +89,6 @@ bedSchema.pre("validate", function () {
     this.joiningDate = null;
     this.lastDate = null;
   }
-
 });
 
 const roomSchema = new mongoose.Schema(
@@ -109,8 +117,8 @@ const roomSchema = new mongoose.Schema(
     }, // Total beds in the room (e.g., 4)
 
     occupiedFor: {
-      type: String
-    }, 
+      type: String,
+    },
 
     beds: [bedSchema], // Array containing the 4 beds (2 Hall, 2 Bedroom)
   },
@@ -121,8 +129,8 @@ const roomSchema = new mongoose.Schema(
 
 // 3. Indexes for Optimized Admin Queries
 roomSchema.index({ floorNumber: 1 });
-roomSchema.index({ 'beds.status': 1 }); // Fast lookup to find vacant/occupied beds across floors
+roomSchema.index({ "beds.status": 1 }); // Fast lookup to find vacant/occupied beds across floors
 
-const Room = mongoose.model('Room', roomSchema);
+const Room = mongoose.model("Room", roomSchema);
 
 module.exports = Room;

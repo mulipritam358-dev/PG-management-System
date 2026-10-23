@@ -5,6 +5,7 @@ const bcrypt = require("bcrypt");
 const fs = require("fs");
 const path = require("path");
 const crypto = require("crypto");
+const { JWT_SECRET } = require("../config");
 
 const ALLOWED_ROLES = ["admin", "owner", "tenant", "user"];
 const allowedImageTypes = ["image/jpeg", "image/png", "image/jpg", "image/webp"];
@@ -74,12 +75,13 @@ const upload = multer({
 });
 
 const handleCreateUser = async (req, res) => {
-  const { email, password, role, mobileNumber } = req.body;
-  const profileImage = req.files?.profileImage?.[0];
-  const aadharCard = req.files?.aadharCard?.[0];
+  const { password, role, mobileNumber } = req.body;
+  const email = typeof req.body.email === "string" ? req.body.email.trim().toLowerCase() : "";
+  // const profileImage = req.files?.profileImage?.[0];
+  // const aadharCard = req.files?.aadharCard?.[0];
 
-  if (!email || !password)
-    return res.status(400).json({ error: "email and password required" });
+  if (!email || !password || !mobileNumber)
+    return res.status(400).json({ error: "email, password, and mobileNumber are required" });
   if (role && !ALLOWED_ROLES.includes(role))
     return res.status(400).json({ error: "invalid role" });
 
@@ -89,38 +91,42 @@ const handleCreateUser = async (req, res) => {
     const userData = {
       email,
       password: hashedPassword,
-      role,
+      role: role || "user",
       mobileNumber,
     };
 
-    if (profileImage) {
-      const encryptedProfile = encryptBuffer(fs.readFileSync(profileImage.path), ADMIN_FILE_PASSWORD);
-      userData.profileImage = {
-        contentType: profileImage.mimetype,
-        filename: profileImage.filename,
-        path: profileImage.path,
-        encryptedData: encryptedProfile.data,
-        iv: encryptedProfile.iv,
-        lockedWith: ADMIN_FILE_PASSWORD,
-      };
-    }
+    // if (profileImage) {
+    //   const encryptedProfile = encryptBuffer(fs.readFileSync(profileImage.path), ADMIN_FILE_PASSWORD);
+    //   userData.profileImage = {
+    //     contentType: profileImage.mimetype,
+    //     filename: profileImage.filename,
+    //     path: profileImage.path,
+    //     encryptedData: encryptedProfile.data,
+    //     iv: encryptedProfile.iv,
+    //     lockedWith: ADMIN_FILE_PASSWORD,
+    //   };
+    // }
 
-    if (aadharCard) {
-      const encryptedAadhar = encryptBuffer(fs.readFileSync(aadharCard.path), ADMIN_FILE_PASSWORD);
-      userData.aadharCard = {
-        contentType: aadharCard.mimetype,
-        filename: aadharCard.filename,
-        path: aadharCard.path,
-        encryptedData: encryptedAadhar.data,
-        iv: encryptedAadhar.iv,
-        lockedWith: ADMIN_FILE_PASSWORD,
-      };
-    }
+    // if (aadharCard) {
+    //   const encryptedAadhar = encryptBuffer(fs.readFileSync(aadharCard.path), ADMIN_FILE_PASSWORD);
+    //   userData.aadharCard = {
+    //     contentType: aadharCard.mimetype,
+    //     filename: aadharCard.filename,
+    //     path: aadharCard.path,
+    //     encryptedData: encryptedAadhar.data,
+    //     iv: encryptedAadhar.iv,
+    //     lockedWith: ADMIN_FILE_PASSWORD,
+    //   };
+    // }
 
     const user = new User(userData);
     await user.save();
 
-    res.status(201).json({ message: "user created", user });
+    const safeUser = user.toObject();
+    delete safeUser.password;
+    delete safeUser.profileImage;
+    delete safeUser.aadharCard;
+    res.status(201).json({ message: "user created", user: safeUser });
   } catch (err) {
     if (err.code === 11000)
       return res.status(409).json({ error: "email already exists" });
@@ -129,29 +135,66 @@ const handleCreateUser = async (req, res) => {
 };
 
 const handleLogoin = async (req, res) => {
-  const { email, password } = req.body;
-  const existingUser = await User.findOne({ email });
+  const email = typeof req.body.email === "string" ? req.body.email.trim().toLowerCase() : "";
+  const { password } = req.body;
   const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-  const secret = "Pass@222";
 
-  if (!existingUser || !emailRegex.test(email))
-    return res.status(400).send({ errorInfo: "Invalid Email" });
-  const correctUser = await User.findOne({ email });
+  if (!emailRegex.test(email) || !password)
+    return res.status(400).json({ errorInfo: "Invalid Credentials" });
 
-  const isPasswordValid = await bcrypt.compare(password, existingUser.password);
+  try {
+    const existingUser = await User.findOne({ email });
+    if (!existingUser) {
+      return res.status(401).json({ errorInfo: "Invalid Credentials" });
+    }
 
-  if (!correctUser || !isPasswordValid)
-    return res.status(400).send({ errorInfo: "Invalid Credentials" });
+    const isPasswordValid = await bcrypt.compare(password, existingUser.password);
+    if (!isPasswordValid) {
+      return res.status(401).json({ errorInfo: "Invalid Credentials" });
+    }
 
-  const payload = {
-    id: correctUser._id,
-    email: correctUser.email,
-    role: correctUser.role,
-    mobileNumber: correctUser.mobileNumber,
-  };
-  const token = jwt.sign(correctUser.toObject(), secret);
-  res.cookie("uid", token);
-  res.status(200).send({ message: "Login success", token: token });
+    if (!JWT_SECRET) {
+      console.error("JWT_SECRET is not configured");
+      return res.status(500).json({ error: "Authentication is not configured" });
+    }
+
+    const token = jwt.sign(
+      { sub: existingUser._id.toString() },
+      JWT_SECRET,
+      { expiresIn: "8h" },
+    );
+    res.cookie("uid", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      maxAge: 8 * 60 * 60 * 1000,
+    });
+    return res.status(200).json({
+      message: "Login success",
+      token,
+      user: {
+        id: existingUser._id.toString(),
+        email: existingUser.email,
+        role: existingUser.role,
+        mobileNumber: existingUser.mobileNumber,
+      },
+    });
+  } catch (err) {
+    console.error("Login failed:", err);
+    return res.status(500).json({ error: "Unable to log in" });
+  }
+};
+
+const handleGetUsers = async (req, res) => {
+  try {
+    const users = await User.find()
+      .select("-password -profileImage -aadharCard")
+      .lean();
+    return res.status(200).json({ users });
+  } catch (err) {
+    console.error("Unable to retrieve users:", err);
+    return res.status(500).json({ error: "Unable to retrieve users" });
+  }
 };
 
 const viewProtectedFile = async (req, res) => {
@@ -183,4 +226,11 @@ const viewProtectedFile = async (req, res) => {
   }
 };
 
-module.exports = { handleLogoin, handleCreateUser, upload, viewProtectedFile, ADMIN_FILE_PASSWORD };
+module.exports = {
+  handleLogoin,
+  handleCreateUser,
+  handleGetUsers,
+  upload,
+  viewProtectedFile,
+  ADMIN_FILE_PASSWORD,
+};

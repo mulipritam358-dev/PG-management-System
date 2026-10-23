@@ -2,17 +2,16 @@
 import logo from "./logo.svg";
 import "./App.css";
 import { BrowserRouter as Router, Routes, Route } from "react-router";
-import Signup from "./Componeent/Auth/Signup";
-import Dummy from "./Componeent/Auth/Dummy";
-import DummyType from "./Componeent/DummyType";
+ 
+ 
 
 function App() {
   return (
     <>
+    <h1>Hello</h1>
       <Router>
         <Routes>
-          <Route path="/" element={<DummyType />} />
-          <Route exact path="/auth/register" element={<Signup />} />
+ 
           {/* <Route exact path="/auth/login" element={} /> */}
         </Routes>
       </Router>
