@@ -80,6 +80,12 @@ const handleCreateUser = async (req, res) => {
   // const profileImage = req.files?.profileImage?.[0];
   // const aadharCard = req.files?.aadharCard?.[0];
 
+  const existingUser = await User.findOne({email})
+
+  if (existingUser) {
+        return res.status(400).json({ error: "user already exist" });
+  }
+
   if (!email || !password || !mobileNumber)
     return res.status(400).json({ error: "email, password, and mobileNumber are required" });
   if (role && !ALLOWED_ROLES.includes(role))
