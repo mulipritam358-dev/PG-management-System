@@ -2,17 +2,14 @@
 import logo from "./logo.svg";
 import "./App.css";
 import { BrowserRouter as Router, Routes, Route } from "react-router";
- 
- 
+import Signup from "./Componeent/Auth/Signup";
 
 function App() {
   return (
     <>
-    <h1>Hello</h1>
       <Router>
         <Routes>
- 
-          {/* <Route exact path="/auth/login" element={} /> */}
+          <Route exact path="*" element={<Signup />} />
         </Routes>
       </Router>
     </>
