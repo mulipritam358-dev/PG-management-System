@@ -4,12 +4,14 @@ const loginValidation = async (
   mobileNumber,
   password,
   confirmPassword,
+  role
 ) => {
   try {
     const resp = await axios.post("http://localhost:8081/api/users", {
       email: email,
       password: password,
       mobileNumber: mobileNumber,
+      role: role
     });
 
     return resp;

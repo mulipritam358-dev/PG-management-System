@@ -3,91 +3,87 @@
   margin-bottom: 40px;
 }
 
+/* Use flex to lock both columns to the exact same stretch height */
 .signup-row {
-  align-items: stretch;
-}
-
-/* Image column */
-.image-column {
   display: flex;
   align-items: stretch;
   justify-content: center;
-  min-width: 0;
+}
+
+/* Image column & container */
+.image-column {
+  display: flex;
+  align-items: stretch;
+  padding: 0; /* Remove default Bootstrap column padding if needed for exact fit */
 }
 
 .logo-image {
   width: 100%;
-  height: 80%;
-  min-width: 0;
-  object-fit: fill;
+  height: 580px; /* Fixed identical height */
+  object-fit: cover;
   display: block;
-  border-radius: 10px;
+  border-top-left-radius: 10px;
+  border-bottom-left-radius: 10px;
 }
 
-/* Form column */
-/* .form-heading-style {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  text-align: center;
-  background-color: #E8EBF2;
-  padding: 30px;
-  border: 1px solid #ddd;
-  border-radius: 10px;
-  min-width: 0;
-  min-height: 50%;
-  max-height: 50%;
-  border: 2px solid red;
-} */
-
+/* Form column & container */
 .form-heading-style {
   display: flex;
   flex-direction: column;
   justify-content: center;
   text-align: center;
   background-color: #e8ebf2;
-  padding: 30px;
-  border-radius: 10px;
-  min-width: 0;
-  height: 602px;
+  padding: 40px 30px;
+  border-top-right-radius: 10px;
+  border-bottom-right-radius: 10px;
   box-sizing: border-box;
+  height: 580px; /* Fixed identical height matching the image */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
 #form {
-  margin: 10px 90px;
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.password-field {
+  position: relative;
+}
+
+.password-field .form-control {
+  padding-right: 2.75rem;
+}
+
+.password-visibility-toggle {
+  position: absolute;
+  top: 50%;
+  right: 0.75rem;
+  display: flex;
+  align-items: center;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #6c757d;
+  transform: translateY(-50%);
+  cursor: pointer;
+}
+
+.password-visibility-toggle:focus-visible {
+  outline: 2px solid #255da8;
+  outline-offset: 2px;
 }
 
 .signup-btn {
-  width: 100%;
   background-color: #255da8;
+  border-color: #255da8;
   color: #e0fbff;
+  font-weight: 500;
 }
 
-/* Mobile responsive layout */
-@media (max-width: 991.98px) {
-  .image-column {
-    display: none;
-  }
-}
-
-@media (max-width: 991.98px) {
-  .image-column {
-    margin-bottom: 25px;
-  }
-
-  .logo-image {
-    width: 100%;
-    height: 300px;
-    object-fit: contain;
-  }
-
-  #form {
-    margin: 10px 0;
-  }
-
-  .form-heading-style {
-    padding: 20px;
-  }
+.signup-btn:hover {
+  background-color: #1d4b8a;
+  border-color: #1d4b8a;
 }
 
 .error-banner-common-style {
@@ -96,4 +92,18 @@
   justify-content: space-around;
   border-radius: 10px;
   padding: 10px;
+  margin-bottom: 15px;
+}
+
+/* Mobile responsive layout */
+@media (max-width: 991.98px) {
+  .image-column {
+    display: none;
+  }
+  
+  .form-heading-style {
+    height: auto; /* Allow height to adapt organically on smaller screens */
+    border-radius: 10px;
+    padding: 30px 20px;
+  }
 }

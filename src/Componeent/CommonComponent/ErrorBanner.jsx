@@ -33,7 +33,7 @@ function ErrorBanner({ message, type, setClose }) {
             backgroundColor: "#DEF2D5",
           }}
         >
-          <div>
+          <div style={{display: "flex"}}>
             <CheckIcon style={{ color: "#708769", marginRight: "10px" }} />
             <p style={{ color: "#708769", fontSize: "18px" }}>{message}</p>
           </div>
