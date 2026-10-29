@@ -9,26 +9,20 @@ function App() {
   return (
     <>
       <Router>
-   
         <Routes>
-
           <Route
             exact
             path="*"
             element={
               <SignupState>
                 <Signup />
-                </SignupState>
-              }
-              />
-
-     
+              </SignupState>
+            }
+          />
         </Routes>
-       
       </Router>
     </>
   );
 }
 
 export default App;
- 
